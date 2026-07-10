@@ -6,6 +6,15 @@
   <h2>Admin dashboard</h2>
 
   {% if students %}
+    <section class="admin-actions">
+      <h3>Reminders</h3>
+
+      {% for week in weeks %}
+        <form method="post" action="{{ url_for('admin.send_reminders', week_number=week['number']) }}">
+          <button type="submit">Send Week {{ week["number"] }} reminders</button>
+        </form>
+      {% endfor %}
+    </section>
     <table>
       <thead>
         <tr>
@@ -14,6 +23,7 @@
           <th>Progress</th>
           {% for week in weeks %}
             <th>Week {{ week["number"] }}</th>
+
           {% endfor %}
         </tr>
       </thead>

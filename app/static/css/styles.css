@@ -113,3 +113,17 @@ th {
 progress {
   width: 100%;
 }
+
+.admin-actions {
+  margin-bottom: 1.5rem;
+}
+
+.admin-actions form {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.status-label {
+  display: inline-block;
+  margin-left: 0.5rem;
+}

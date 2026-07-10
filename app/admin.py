@@ -1,9 +1,10 @@
 from functools import wraps
-
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, session, url_for
+from flask_mail import Message
 
 from app.curriculum import WEEKS
 from app.db import get_db
+from app.mail import mail
 
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
@@ -127,3 +128,44 @@ def review_submission(submission_id):
         return redirect(url_for("admin.dashboard"))
 
     return render_template("admin/review_submission.html", submission=submission)
+
+
+@admin.route("/reminders/week/<int:week_number>", methods=("POST",))
+@admin_required
+def send_reminders(week_number):
+    week = next((item for item in WEEKS if item["number"] == week_number), None)
+
+    if week is None:
+        abort(404)
+
+    db = get_db()
+
+    missing_students = db.execute(
+        """
+        SELECT students.name, students.email
+        FROM students
+        LEFT JOIN submissions
+          ON submissions.student_id = students.id
+          AND submissions.week_number = ?
+        WHERE submissions.id IS NULL
+        ORDER BY students.name
+        """,
+        (week_number,),
+    ).fetchall()
+
+    for student in missing_students:
+        message = Message(
+            subject=f"Reminder: Week {week_number} submission",
+            recipients=[student["email"]],
+            body=(
+                f"Hi {student['name']},\n\n"
+                f"This is a reminder to submit your work for Week {week_number}: {week['title']}.\n\n"
+                "You can log in to the Root Academy Cohort Tracker to submit your work.\n\n"
+                "Best,\n"
+                "Root Academy"
+            ),
+        )
+        mail.send(message)
+
+    flash(f"Sent {len(missing_students)} reminder email(s) for Week {week_number}.")
+    return redirect(url_for("admin.dashboard"))
