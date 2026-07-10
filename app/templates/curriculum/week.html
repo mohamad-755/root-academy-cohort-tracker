@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Week {{ week["number"] }} - Root Academy Cohort Tracker{% endblock %}
+
+{% block content %}
+  <p><a href="{{ url_for('curriculum.index') }}">Back to curriculum</a></p>
+
+  <h2>Week {{ week["number"] }}: {{ week["title"] }}</h2>
+  <p>{{ week["summary"] }}</p>
+
+  <h3>Objectives</h3>
+  <ul>
+    {% for objective in week["objectives"] %}
+      <li>{{ objective }}</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Tasks</h3>
+  <ul>
+    {% for task in week["tasks"] %}
+      <li>{{ task }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
