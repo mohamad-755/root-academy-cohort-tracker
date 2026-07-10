@@ -16,4 +16,7 @@ def create_app():
     from app.auth import auth
     app.register_blueprint(auth)
 
+    from app.curriculum import curriculum
+    app.register_blueprint(curriculum)
+
     return app
