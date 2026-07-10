@@ -7,6 +7,9 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    from app.mail import mail
+    mail.init_app(app)
+
     from app import db
     db.init_app(app)
 
