@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS submissions;
 DROP TABLE IF EXISTS students;
 
 CREATE TABLE students (
@@ -6,4 +7,16 @@ CREATE TABLE students (
   email TEXT NOT NULL UNIQUE,
   cohort_code TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE submissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL,
+  week_number INTEGER NOT NULL,
+  submission_url TEXT NOT NULL,
+  note TEXT,
+  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (student_id) REFERENCES students (id),
+  UNIQUE (student_id, week_number)
 );

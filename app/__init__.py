@@ -19,4 +19,7 @@ def create_app():
     from app.curriculum import curriculum
     app.register_blueprint(curriculum)
 
+    from app.submissions import submissions
+    app.register_blueprint(submissions)
+
     return app

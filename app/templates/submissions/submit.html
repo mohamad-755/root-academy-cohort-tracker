@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Week {{ week["number"] }} - Root Academy Cohort Tracker{% endblock %}
+
+{% block content %}
+  <p><a href="{{ url_for('curriculum.week_detail', week_number=week['number']) }}">Back to week</a></p>
+
+  <h2>Submit Week {{ week["number"] }}: {{ week["title"] }}</h2>
+
+  {% if submission %}
+    <p>You already submitted this week. Updating the form will replace your previous link.</p>
+  {% endif %}
+
+  <form method="post">
+    <label for="submission_url">Submission link</label>
+    <input
+      id="submission_url"
+      name="submission_url"
+      type="url"
+      value="{{ submission['submission_url'] if submission else '' }}"
+      required
+    >
+
+    <label for="note">Note</label>
+    <textarea id="note" name="note" rows="5">{{ submission["note"] if submission else "" }}</textarea>
+
+    <button type="submit">{{ "Update submission" if submission else "Submit work" }}</button>
+  </form>
+{% endblock %}
