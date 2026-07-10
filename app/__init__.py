@@ -3,9 +3,12 @@ from flask import Flask
 from config import Config
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    if test_config is not None:
+        app.config.update(test_config)
 
     from app.mail import mail
     mail.init_app(app)
