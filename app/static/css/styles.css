@@ -77,3 +77,20 @@ textarea {
   padding: 0.5rem;
   width: 100%;
 }
+
+table {
+  border-collapse: collapse;
+  background: white;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+th {
+  background: #f0f0f0;
+}

@@ -22,4 +22,7 @@ def create_app():
     from app.submissions import submissions
     app.register_blueprint(submissions)
 
+    from app.admin import admin
+    app.register_blueprint(admin)
+
     return app

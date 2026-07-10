@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - Root Academy Cohort Tracker{% endblock %}
+
+{% block content %}
+  <h2>Admin login</h2>
+
+  <form method="post">
+    <label for="admin_code">Admin code</label>
+    <input id="admin_code" name="admin_code" type="password" required>
+
+    <button type="submit">Log in as admin</button>
+  </form>
+{% endblock %}
