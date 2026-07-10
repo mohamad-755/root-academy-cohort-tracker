@@ -66,11 +66,29 @@ def dashboard():
         for submission in submissions
     }
 
+    progress_by_student = {}
+
+    for student in students:
+        submitted_count = sum(
+            1
+            for week in WEEKS
+            if (student["id"], week["number"]) in submissions_by_student
+        )
+        total_weeks = len(WEEKS)
+        percentage = round((submitted_count / total_weeks) * 100) if total_weeks else 0
+
+        progress_by_student[student["id"]] = {
+            "submitted_count": submitted_count,
+            "total_weeks": total_weeks,
+            "percentage": percentage,
+        }
+
     return render_template(
         "admin/dashboard.html",
         students=students,
         weeks=WEEKS,
         submissions_by_student=submissions_by_student,
+        progress_by_student=progress_by_student,
     )
 
 
