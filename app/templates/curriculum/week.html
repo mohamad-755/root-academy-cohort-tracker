@@ -4,7 +4,7 @@
 
 {% block content %}
   <p><a href="{{ url_for('curriculum.index') }}">Back to curriculum</a></p>
-
+  <p><a href="{{ url_for('submissions.submit', week_number=week['number']) }}">Submit work for this week</a></p>
   <h2>Week {{ week["number"] }}: {{ week["title"] }}</h2>
   <p>{{ week["summary"] }}</p>
 

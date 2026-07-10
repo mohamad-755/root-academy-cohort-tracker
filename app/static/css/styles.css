@@ -69,3 +69,11 @@ button {
 .week-card h3 {
   margin-top: 0;
 }
+
+textarea {
+  box-sizing: border-box;
+  display: block;
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  width: 100%;
+}
