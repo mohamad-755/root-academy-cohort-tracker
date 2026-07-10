@@ -25,7 +25,10 @@
               {% set submission = submissions_by_student.get((student["id"], week["number"])) %}
               <td>
                 {% if submission %}
-                  <a href="{{ submission['submission_url'] }}" target="_blank">Submitted</a>
+                  <a href="{{ url_for('admin.review_submission', submission_id=submission['id']) }}">Review</a>
+                  {% if submission["feedback"] %}
+                    <span>Feedback given</span>
+                  {% endif %}
                 {% else %}
                   Missing
                 {% endif %}

@@ -11,6 +11,13 @@
     <p>You already submitted this week. Updating the form will replace your previous link.</p>
   {% endif %}
 
+  {% if submission and submission["feedback"] %}
+    <section class="feedback">
+      <h3>Feedback</h3>
+      <p>{{ submission["feedback"] }}</p>
+    </section>
+  {% endif %}
+
   <form method="post">
     <label for="submission_url">Submission link</label>
     <input

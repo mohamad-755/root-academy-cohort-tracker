@@ -94,3 +94,10 @@ td {
 th {
   background: #f0f0f0;
 }
+
+.feedback {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}

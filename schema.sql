@@ -15,8 +15,10 @@ CREATE TABLE submissions (
   week_number INTEGER NOT NULL,
   submission_url TEXT NOT NULL,
   note TEXT,
+  feedback TEXT,
   submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  reviewed_at TIMESTAMP,
   FOREIGN KEY (student_id) REFERENCES students (id),
   UNIQUE (student_id, week_number)
 );

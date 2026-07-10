@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, session, url_for
 
 from app.curriculum import WEEKS
 from app.db import get_db
@@ -56,7 +56,7 @@ def dashboard():
 
     submissions = db.execute(
         """
-        SELECT student_id, week_number, submission_url, submitted_at, updated_at
+        SELECT id, student_id, week_number, submission_url, submitted_at, updated_at, feedback
         FROM submissions
         """
     ).fetchall()
@@ -72,3 +72,40 @@ def dashboard():
         weeks=WEEKS,
         submissions_by_student=submissions_by_student,
     )
+
+
+@admin.route("/submissions/<int:submission_id>/review", methods=("GET", "POST"))
+@admin_required
+def review_submission(submission_id):
+    db = get_db()
+
+    submission = db.execute(
+        """
+        SELECT submissions.*, students.name AS student_name, students.email AS student_email
+        FROM submissions
+        JOIN students ON submissions.student_id = students.id
+        WHERE submissions.id = ?
+        """,
+        (submission_id,),
+    ).fetchone()
+
+    if submission is None:
+        abort(404)
+
+    if request.method == "POST":
+        feedback = request.form["feedback"].strip()
+
+        db.execute(
+            """
+            UPDATE submissions
+            SET feedback = ?, reviewed_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            """,
+            (feedback, submission_id),
+        )
+        db.commit()
+
+        flash("Feedback saved.")
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template("admin/review_submission.html", submission=submission)
