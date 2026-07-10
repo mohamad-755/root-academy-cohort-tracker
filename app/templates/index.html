@@ -5,4 +5,13 @@
 {% block content %}
   <h2>Welcome to Root Academy</h2>
   <p>Track curriculum progress, weekly submissions, and feedback for the Introduction to Data Science cohort.</p>
+
+  {% if g.student and progress %}
+    <section class="progress-summary">
+      <h3>Your progress</h3>
+      <p>{{ progress["submitted_count"] }} of {{ progress["total_weeks"] }} weeks submitted</p>
+      <progress value="{{ progress['submitted_count'] }}" max="{{ progress['total_weeks'] }}"></progress>
+      <p>{{ progress["percentage"] }}% complete</p>
+    </section>
+  {% endif %}
 {% endblock %}

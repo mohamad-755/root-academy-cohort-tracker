@@ -11,6 +11,7 @@
         <tr>
           <th>Student</th>
           <th>Email</th>
+          <th>Progress</th>
           {% for week in weeks %}
             <th>Week {{ week["number"] }}</th>
           {% endfor %}
@@ -21,6 +22,11 @@
           <tr>
             <td>{{ student["name"] }}</td>
             <td>{{ student["email"] }}</td>
+            {% set progress = progress_by_student[student["id"]] %}
+            <td>
+              {{ progress["submitted_count"] }}/{{ progress["total_weeks"] }}
+              ({{ progress["percentage"] }}%)
+            </td>
             {% for week in weeks %}
               {% set submission = submissions_by_student.get((student["id"], week["number"])) %}
               <td>
