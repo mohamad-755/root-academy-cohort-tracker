@@ -2,7 +2,8 @@ from flask import Blueprint, abort, flash, g, redirect, render_template, request
 
 from app.auth import login_required
 from app.curriculum import WEEKS
-from app.db import get_db
+from app.extensions import db
+from app.models import Submission
 
 
 submissions = Blueprint("submissions", __name__, url_prefix="/submissions")
@@ -20,15 +21,11 @@ def get_week_or_404(week_number):
 @login_required
 def submit(week_number):
     week = get_week_or_404(week_number)
-    db = get_db()
 
-    existing_submission = db.execute(
-        """
-        SELECT * FROM submissions
-        WHERE student_id = ? AND week_number = ?
-        """,
-        (g.student.id, week_number),
-    ).fetchone()
+    existing_submission = Submission.query.filter_by(
+        student_id=g.student.id,
+        week_number=week_number,
+    ).first()
 
     if request.method == "POST":
         submission_url = request.form["submission_url"].strip()
@@ -40,26 +37,20 @@ def submit(week_number):
 
         if error is None:
             if existing_submission is None:
-                db.execute(
-                    """
-                    INSERT INTO submissions (student_id, week_number, submission_url, note)
-                    VALUES (?, ?, ?, ?)
-                    """,
-                    (g.student.id, week_number, submission_url, note),
+                submission = Submission(
+                    student_id=g.student.id,
+                    week_number=week_number,
+                    submission_url=submission_url,
+                    note=note,
                 )
+                db.session.add(submission)
                 flash("Submission saved.")
             else:
-                db.execute(
-                    """
-                    UPDATE submissions
-                    SET submission_url = ?, note = ?, updated_at = CURRENT_TIMESTAMP
-                    WHERE id = ?
-                    """,
-                    (submission_url, note, existing_submission["id"]),
-                )
+                existing_submission.submission_url = submission_url
+                existing_submission.note = note
                 flash("Submission updated.")
 
-            db.commit()
+            db.session.commit()
             return redirect(url_for("curriculum.week_detail", week_number=week_number))
 
         flash(error)

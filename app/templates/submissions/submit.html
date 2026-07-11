@@ -11,10 +11,10 @@
     <p>You already submitted this week. Updating the form will replace your previous link.</p>
   {% endif %}
 
-  {% if submission and submission["feedback"] %}
+  {% if submission and submission.feedback %}
     <section class="feedback">
       <h3>Feedback</h3>
-      <p>{{ submission["feedback"] }}</p>
+      <p>{{ submission.feedback }}</p>
     </section>
   {% endif %}
 
@@ -24,12 +24,12 @@
       id="submission_url"
       name="submission_url"
       type="url"
-      value="{{ submission['submission_url'] if submission else '' }}"
+      value="{{ submission.submission_url if submission else '' }}"
       required
     >
 
     <label for="note">Note</label>
-    <textarea id="note" name="note" rows="5">{{ submission["note"] if submission else "" }}</textarea>
+    <textarea id="note" name="note" rows="5">{{ submission.note if submission else "" }}</textarea>
 
     <button type="submit">{{ "Update submission" if submission else "Submit work" }}</button>
   </form>

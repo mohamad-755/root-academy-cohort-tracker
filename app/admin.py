@@ -1,10 +1,14 @@
 from functools import wraps
+from datetime import datetime, timezone
+
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, session, url_for
 from flask_mail import Message
+from sqlalchemy import and_, or_
 
 from app.curriculum import WEEKS
-from app.db import get_db
+from app.extensions import db
 from app.mail import mail
+from app.models import Student, Submission
 
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
@@ -45,38 +49,23 @@ def logout():
 @admin.route("/")
 @admin_required
 def dashboard():
-    db = get_db()
-
     search = request.args.get("search", "").strip()
+    students_query = Student.query
 
     if search:
-        students = db.execute(
-            """
-            SELECT id, name, email, created_at
-            FROM students
-            WHERE name LIKE ? OR email LIKE ?
-            ORDER BY created_at DESC
-            """,
-            (f"%{search}%", f"%{search}%"),
-        ).fetchall()
-    else:
-        students = db.execute(
-            """
-            SELECT id, name, email, created_at
-            FROM students
-            ORDER BY created_at DESC
-            """
-        ).fetchall()
+        search_pattern = f"%{search}%"
+        students_query = students_query.filter(
+            or_(
+                Student.name.ilike(search_pattern),
+                Student.email.ilike(search_pattern),
+            )
+        )
 
-    submissions = db.execute(
-        """
-        SELECT id, student_id, week_number, submission_url, submitted_at, updated_at, feedback
-        FROM submissions
-        """
-    ).fetchall()
+    students = students_query.order_by(Student.created_at.desc()).all()
+    submissions = Submission.query.all()
 
     submissions_by_student = {
-        (submission["student_id"], submission["week_number"]): submission
+        (submission.student_id, submission.week_number): submission
         for submission in submissions
     }
 
@@ -86,12 +75,12 @@ def dashboard():
         submitted_count = sum(
             1
             for week in WEEKS
-            if (student["id"], week["number"]) in submissions_by_student
+            if (student.id, week["number"]) in submissions_by_student
         )
         total_weeks = len(WEEKS)
         percentage = round((submitted_count / total_weeks) * 100) if total_weeks else 0
 
-        progress_by_student[student["id"]] = {
+        progress_by_student[student.id] = {
             "submitted_count": submitted_count,
             "total_weeks": total_weeks,
             "percentage": percentage,
@@ -110,17 +99,7 @@ def dashboard():
 @admin.route("/submissions/<int:submission_id>/review", methods=("GET", "POST"))
 @admin_required
 def review_submission(submission_id):
-    db = get_db()
-
-    submission = db.execute(
-        """
-        SELECT submissions.*, students.name AS student_name, students.email AS student_email
-        FROM submissions
-        JOIN students ON submissions.student_id = students.id
-        WHERE submissions.id = ?
-        """,
-        (submission_id,),
-    ).fetchone()
+    submission = db.session.get(Submission, submission_id)
 
     if submission is None:
         abort(404)
@@ -128,15 +107,9 @@ def review_submission(submission_id):
     if request.method == "POST":
         feedback = request.form["feedback"].strip()
 
-        db.execute(
-            """
-            UPDATE submissions
-            SET feedback = ?, reviewed_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-            """,
-            (feedback, submission_id),
-        )
-        db.commit()
+        submission.feedback = feedback
+        submission.reviewed_at = datetime.now(timezone.utc)
+        db.session.commit()
 
         flash("Feedback saved.")
         return redirect(url_for("admin.dashboard"))
@@ -152,27 +125,25 @@ def send_reminders(week_number):
     if week is None:
         abort(404)
 
-    db = get_db()
-
-    missing_students = db.execute(
-        """
-        SELECT students.name, students.email
-        FROM students
-        LEFT JOIN submissions
-          ON submissions.student_id = students.id
-          AND submissions.week_number = ?
-        WHERE submissions.id IS NULL
-        ORDER BY students.name
-        """,
-        (week_number,),
-    ).fetchall()
+    missing_students = (
+        Student.query.outerjoin(
+            Submission,
+            and_(
+                Submission.student_id == Student.id,
+                Submission.week_number == week_number,
+            ),
+        )
+        .filter(Submission.id.is_(None))
+        .order_by(Student.name)
+        .all()
+    )
 
     for student in missing_students:
         message = Message(
             subject=f"Reminder: Week {week_number} submission",
-            recipients=[student["email"]],
+            recipients=[student.email],
             body=(
-                f"Hi {student['name']},\n\n"
+                f"Hi {student.name},\n\n"
                 f"This is a reminder to submit your work for Week {week_number}: {week['title']}.\n\n"
                 "You can log in to the Root Academy Cohort Tracker to submit your work.\n\n"
                 "Best,\n"
