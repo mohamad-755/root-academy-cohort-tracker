@@ -47,13 +47,26 @@ def logout():
 def dashboard():
     db = get_db()
 
-    students = db.execute(
-        """
-        SELECT id, name, email, created_at
-        FROM students
-        ORDER BY created_at DESC
-        """
-    ).fetchall()
+    search = request.args.get("search", "").strip()
+
+    if search:
+        students = db.execute(
+            """
+            SELECT id, name, email, created_at
+            FROM students
+            WHERE name LIKE ? OR email LIKE ?
+            ORDER BY created_at DESC
+            """,
+            (f"%{search}%", f"%{search}%"),
+        ).fetchall()
+    else:
+        students = db.execute(
+            """
+            SELECT id, name, email, created_at
+            FROM students
+            ORDER BY created_at DESC
+            """
+        ).fetchall()
 
     submissions = db.execute(
         """
@@ -90,6 +103,7 @@ def dashboard():
         weeks=WEEKS,
         submissions_by_student=submissions_by_student,
         progress_by_student=progress_by_student,
+        search=search,
     )
 
 
