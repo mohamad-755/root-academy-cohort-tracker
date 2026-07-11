@@ -117,6 +117,12 @@ In production, set a real `ADMIN_CODE` environment variable.
 
 This app can be deployed on Render or Railway.
 
+Production start command:
+
+```bash
+gunicorn run:app
+```
+
 Recommended production settings:
 
 - Set a secure `SECRET_KEY`
@@ -124,6 +130,38 @@ Recommended production settings:
 - Configure SMTP variables if real reminder emails should be sent
 - Set `MAIL_SUPPRESS_SEND=false` only after SMTP credentials are configured
 - Run `flask init-db` during setup or before first use
+
+Local development still uses:
+
+```bash
+python run.py
+```
+
+On Windows, use `python run.py` for local development. Gunicorn is intended for Linux-based deployment environments such as Render or Railway.## Deployment Notes
+
+This app can be deployed on Render or Railway.
+
+Production start command:
+
+```bash
+gunicorn run:app
+```
+
+Recommended production settings:
+
+- Set a secure `SECRET_KEY`
+- Set a secure `ADMIN_CODE`
+- Configure SMTP variables if real reminder emails should be sent
+- Set `MAIL_SUPPRESS_SEND=false` only after SMTP credentials are configured
+- Run `flask init-db` during setup or before first use
+
+Local development still uses:
+
+```bash
+python run.py
+```
+
+On Windows, use `python run.py` for local development. Gunicorn is intended for Linux-based deployment environments such as Render or Railway.
 
 ## Screenshots
 
