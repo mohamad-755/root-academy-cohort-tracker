@@ -127,3 +127,12 @@ progress {
   display: inline-block;
   margin-left: 0.5rem;
 }
+
+.search-form {
+  margin-bottom: 1.5rem;
+  max-width: 520px;
+}
+
+.search-form button {
+  margin-right: 0.5rem;
+}
