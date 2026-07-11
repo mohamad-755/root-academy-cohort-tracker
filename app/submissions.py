@@ -27,7 +27,7 @@ def submit(week_number):
         SELECT * FROM submissions
         WHERE student_id = ? AND week_number = ?
         """,
-        (g.student["id"], week_number),
+        (g.student.id, week_number),
     ).fetchone()
 
     if request.method == "POST":
@@ -45,7 +45,7 @@ def submit(week_number):
                     INSERT INTO submissions (student_id, week_number, submission_url, note)
                     VALUES (?, ?, ?, ?)
                     """,
-                    (g.student["id"], week_number, submission_url, note),
+                    (g.student.id, week_number, submission_url, note),
                 )
                 flash("Submission saved.")
             else:
