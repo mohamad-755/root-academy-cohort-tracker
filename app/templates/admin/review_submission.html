@@ -1,62 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard - Root Academy Cohort Tracker{% endblock %}
+{% block title %}Review Submission - Root Academy Cohort Tracker{% endblock %}
 
 {% block content %}
-  <h2>Admin dashboard</h2>
+  <p><a href="{{ url_for('admin.dashboard') }}">Back to dashboard</a></p>
 
-  <section class="admin-actions">
-    <h3>Reminders</h3>
+  <h2>Review Week {{ submission["week_number"] }} Submission</h2>
 
-    {% for week in weeks %}
-      <form method="post" action="{{ url_for('admin.send_reminders', week_number=week['number']) }}">
-        <button type="submit">Send Week {{ week["number"] }} reminders</button>
-      </form>
-    {% endfor %}
-  </section>
+  <p>
+    <strong>Student:</strong>
+    {{ submission["student_name"] }} ({{ submission["student_email"] }})
+  </p>
 
-  {% if students %}
-    <table>
-      <thead>
-        <tr>
-          <th>Student</th>
-          <th>Email</th>
-          <th>Progress</th>
-          {% for week in weeks %}
-            <th>Week {{ week["number"] }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for student in students %}
-          <tr>
-            <td>{{ student["name"] }}</td>
-            <td>{{ student["email"] }}</td>
+  <p>
+    <strong>Submitted link:</strong>
+    <a href="{{ submission['submission_url'] }}" target="_blank">
+      {{ submission["submission_url"] }}
+    </a>
+  </p>
 
-            {% set progress = progress_by_student[student["id"]] %}
-            <td>
-              {{ progress["submitted_count"] }}/{{ progress["total_weeks"] }}
-              ({{ progress["percentage"] }}%)
-            </td>
-
-            {% for week in weeks %}
-              {% set submission = submissions_by_student.get((student["id"], week["number"])) %}
-              <td>
-                {% if submission %}
-                  <a href="{{ url_for('admin.review_submission', submission_id=submission['id']) }}">Review</a>
-                  {% if submission["feedback"] %}
-                    <span class="status-label">Feedback given</span>
-                  {% endif %}
-                {% else %}
-                  Missing
-                {% endif %}
-              </td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No students registered yet.</p>
+  {% if submission["note"] %}
+    <p><strong>Student note:</strong> {{ submission["note"] }}</p>
   {% endif %}
+
+  <form method="post">
+    <label for="feedback">Feedback</label>
+    <textarea id="feedback" name="feedback" rows="6">{{ submission["feedback"] or "" }}</textarea>
+
+    <button type="submit">Save feedback</button>
+  </form>
 {% endblock %}
