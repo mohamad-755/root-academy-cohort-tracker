@@ -9,6 +9,9 @@ def create_app(test_config=None):
 
     if test_config is not None:
         app.config.update(test_config)
+    
+    from app.extensions import db as sqlalchemy_db
+    sqlalchemy_db.init_app(app)
 
     from app.mail import mail
     mail.init_app(app)
