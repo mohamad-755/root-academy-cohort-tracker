@@ -19,7 +19,7 @@ def index():
             FROM submissions
             WHERE student_id = ?
             """,
-            (g.student["id"],),
+            (g.student.id,),
         ).fetchone()["count"]
 
         total_weeks = len(WEEKS)

@@ -1,9 +1,11 @@
-import sqlite3
 from functools import wraps
 
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
+from sqlalchemy.exc import IntegrityError
 
-from app.db import get_db
+from app.extensions import db
+from app.models import Student
+
 
 auth = Blueprint("auth", __name__)
 
@@ -15,10 +17,7 @@ def load_logged_in_student():
     if student_id is None:
         g.student = None
     else:
-        g.student = get_db().execute(
-            "SELECT * FROM students WHERE id = ?",
-            (student_id,),
-        ).fetchone()
+        g.student = db.session.get(Student, student_id)
 
 
 @auth.route("/register", methods=("GET", "POST"))
@@ -28,7 +27,6 @@ def register():
         email = request.form["email"].strip().lower()
         cohort_code = request.form["cohort_code"].strip()
 
-        db = get_db()
         error = None
 
         if not name:
@@ -40,12 +38,11 @@ def register():
 
         if error is None:
             try:
-                db.execute(
-                    "INSERT INTO students (name, email, cohort_code) VALUES (?, ?, ?)",
-                    (name, email, cohort_code),
-                )
-                db.commit()
-            except sqlite3.IntegrityError:
+                student = Student(name=name, email=email, cohort_code=cohort_code)
+                db.session.add(student)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
                 error = "A student with that email already exists."
             else:
                 flash("Registration successful. Please log in.")
@@ -62,20 +59,19 @@ def login():
         email = request.form["email"].strip().lower()
         cohort_code = request.form["cohort_code"].strip()
 
-        db = get_db()
         error = None
 
-        student = db.execute(
-            "SELECT * FROM students WHERE email = ? AND cohort_code = ?",
-            (email, cohort_code),
-        ).fetchone()
+        student = Student.query.filter_by(
+            email=email,
+            cohort_code=cohort_code,
+        ).first()
 
         if student is None:
             error = "Incorrect email or cohort code."
 
         if error is None:
             session.clear()
-            session["student_id"] = student["id"]
+            session["student_id"] = student.id
             return redirect(url_for("main.index"))
 
         flash(error)
