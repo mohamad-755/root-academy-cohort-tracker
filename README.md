@@ -4,6 +4,10 @@ A Flask web app for managing a 10-week Introduction to Data Science cohort at Ro
 
 Students can view weekly curriculum, submit their work, track their progress, and read feedback. The admin can review submissions, leave feedback, track student progress, and send reminder emails to students with missing submissions.
 
+## Live Demo
+
+Deployed app: https://root-academy-cohort-tracker.onrender.com
+
 ## Why This Project Exists
 
 Root Academy is a student-centered Introduction to Data Science cohort launching in mid-July 2026. This tracker supports the real workflow of the cohort: students need one place to view weekly expectations and submit work, while the admin needs one dashboard to track progress and provide feedback.
@@ -113,14 +117,32 @@ dev-admin-code
 
 In production, set a real `ADMIN_CODE` environment variable.
 
+## Demo Notes
+
+Student accounts can be created from the registration page using any test email and cohort code.
+Admin access requires the configured ADMIN_CODE, which is stored as a Render environment variable and is not committed to the repository.
+
 ## Deployment Notes
 
-This app can be deployed on Render or Railway.
+This app can be deployed on Render.
 
-Production start command:
+Deployed app:
 
 ```bash
-gunicorn run:app
+https://root-academy-cohort-tracker.onrender.com
+```
+
+Render demo start command:
+
+```bash
+flask init-db && gunicorn run:app
+```
+
+The schema uses CREATE TABLE IF NOT EXISTS, so this ensures missing SQLite tables exist without dropping existing data.
+Local development still uses:
+
+```bash
+python run.py
 ```
 
 Recommended production settings:
@@ -131,37 +153,8 @@ Recommended production settings:
 - Set `MAIL_SUPPRESS_SEND=false` only after SMTP credentials are configured
 - Run `flask init-db` during setup or before first use
 
-Local development still uses:
-
-```bash
-python run.py
-```
 
 On Windows, use `python run.py` for local development. Gunicorn is intended for Linux-based deployment environments such as Render or Railway.## Deployment Notes
-
-This app can be deployed on Render or Railway.
-
-Production start command:
-
-```bash
-gunicorn run:app
-```
-
-Recommended production settings:
-
-- Set a secure `SECRET_KEY`
-- Set a secure `ADMIN_CODE`
-- Configure SMTP variables if real reminder emails should be sent
-- Set `MAIL_SUPPRESS_SEND=false` only after SMTP credentials are configured
-- Run `flask init-db` during setup or before first use
-
-Local development still uses:
-
-```bash
-python run.py
-```
-
-On Windows, use `python run.py` for local development. Gunicorn is intended for Linux-based deployment environments such as Render or Railway.
 
 ## Screenshots
 
