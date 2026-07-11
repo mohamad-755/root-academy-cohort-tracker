@@ -1,6 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.extensions import db
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 
 class Student(db.Model):
@@ -10,7 +14,7 @@ class Student(db.Model):
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     cohort_code = db.Column(db.String(80), nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     submissions = db.relationship(
         "Submission",
@@ -28,12 +32,12 @@ class Submission(db.Model):
     submission_url = db.Column(db.Text, nullable=False)
     note = db.Column(db.Text)
     feedback = db.Column(db.Text)
-    submitted_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    submitted_at = db.Column(db.DateTime, nullable=False, default=utc_now)
     updated_at = db.Column(
         db.DateTime,
         nullable=False,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=utc_now,
+        onupdate=utc_now,
     )
     reviewed_at = db.Column(db.DateTime)
 

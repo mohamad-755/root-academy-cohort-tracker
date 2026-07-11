@@ -1,7 +1,7 @@
 from flask import Blueprint, g, render_template
 
 from app.curriculum import WEEKS
-from app.db import get_db
+from app.models import Submission
 
 
 main = Blueprint("main", __name__)
@@ -12,15 +12,7 @@ def index():
     progress = None
 
     if g.student:
-        db = get_db()
-        submitted_count = db.execute(
-            """
-            SELECT COUNT(*) AS count
-            FROM submissions
-            WHERE student_id = ?
-            """,
-            (g.student.id,),
-        ).fetchone()["count"]
+        submitted_count = Submission.query.filter_by(student_id=g.student.id).count()
 
         total_weeks = len(WEEKS)
         percentage = round((submitted_count / total_weeks) * 100) if total_weeks else 0
