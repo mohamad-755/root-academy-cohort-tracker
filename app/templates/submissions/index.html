@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}My Submissions - Root Academy Cohort Tracker{% endblock %}
+
+{% block content %}
+  <h2>My submissions</h2>
+
+  <p>Track your weekly work, feedback, and submission status.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Week</th>
+        <th>Topic</th>
+        <th>Status</th>
+        <th>Feedback</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in weeks %}
+        {% set submission = submissions_by_week.get(week["number"]) %}
+        <tr>
+          <td data-label="Week">Week {{ week["number"] }}</td>
+          <td data-label="Topic">{{ week["title"] }}</td>
+          <td data-label="Status">
+            {% if submission %}
+              <span class="status-label">Submitted</span>
+            {% else %}
+              <span class="status-label pending">Missing</span>
+            {% endif %}
+          </td>
+          <td data-label="Feedback">
+            {% if submission and submission.feedback %}
+              <span class="status-label">Feedback given</span>
+            {% else %}
+              <span class="status-label pending">Not yet</span>
+            {% endif %}
+          </td>
+          <td data-label="Action">
+            <a href="{{ url_for('submissions.submit', week_number=week['number']) }}">
+              {{ "Update" if submission else "Submit" }}
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

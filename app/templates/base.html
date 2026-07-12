@@ -25,9 +25,10 @@
         <span>Admin</span>
         <a href="{{ url_for('admin.logout') }}">Log out</a>
       {% elif g.student %}
-        <a href="{{ url_for('curriculum.index') }}">Curriculum</a>
-        <span>{{ g.student.name }}</span>
-        <a href="{{ url_for('auth.logout') }}">Log out</a>
+      <a href="{{ url_for('curriculum.index') }}">Curriculum</a>
+      <a href="{{ url_for('submissions.index') }}">My submissions</a>
+      <span>{{ g.student.name }}</span>
+      <a href="{{ url_for('auth.logout') }}">Log out</a>
       {% else %}
         <a href="{{ url_for('admin.login') }}">Admin</a>
         <a href="{{ url_for('auth.register') }}">Register</a>
