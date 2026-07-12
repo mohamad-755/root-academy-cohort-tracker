@@ -49,3 +49,30 @@ def test_student_can_submit_weekly_work(client, auth):
 
     assert response.status_code == 200
     assert b"Submission saved" in response.data
+
+def test_logged_in_student_can_view_submissions_dashboard(client, app):
+    client.post(
+        "/register",
+        data={
+            "name": "Test Student",
+            "email": "student@example.com",
+            "cohort_code": "ROOT2026",
+        },
+        follow_redirects=True,
+    )
+
+    client.post(
+        "/login",
+        data={
+            "email": "student@example.com",
+            "cohort_code": "ROOT2026",
+        },
+        follow_redirects=True,
+    )
+
+    response = client.get("/submissions/")
+
+    assert response.status_code == 200
+    assert b"My submissions" in response.data
+    assert b"Week 1" in response.data
+    assert b"Missing" in response.data
