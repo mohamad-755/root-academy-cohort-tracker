@@ -13,6 +13,9 @@ def create_app(test_config=None):
     from app.extensions import db as sqlalchemy_db
     sqlalchemy_db.init_app(app)
 
+    from app.extensions import migrate
+    migrate.init_app(app, sqlalchemy_db)
+
     from app.mail import mail
     mail.init_app(app)
 
