@@ -5,10 +5,12 @@
 {% block content %}
   <h2>Admin login</h2>
 
-  <form method="post">
-    <label for="admin_code">Admin code</label>
-    <input id="admin_code" name="admin_code" type="password" required>
+  <div class="progress-summary" style="margin-top: 1rem;">
+    <form method="post">
+      <label for="admin_code">Admin code</label>
+      <input id="admin_code" name="admin_code" type="password" required autofocus>
 
-    <button type="submit">Log in as admin</button>
-  </form>
+      <button type="submit">Log in as admin</button>
+    </form>
+  </div>
 {% endblock %}

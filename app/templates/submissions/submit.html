@@ -8,7 +8,7 @@
   <h2>Submit Week {{ week["number"] }}: {{ week["title"] }}</h2>
 
   {% if submission %}
-    <p>You already submitted this week. Updating the form will replace your previous link.</p>
+    <p class="flash">You already submitted this week. Updating the form will replace your previous link.</p>
   {% endif %}
 
   {% if submission and submission.feedback %}

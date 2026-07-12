@@ -1,29 +1,142 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f7f7f7;
-  color: #222;
+/* ============================================================
+   Root Academy Cohort Tracker — visual identity
+   Palette matched to the Root Academy logo: rust orange +
+   deep brown, on a warm paper background.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
+:root {
+  /* Color */
+  --ink: #2e1f14;
+  --ink-soft: #6b5544;
+  --bg: #faf6f0;
+  --surface: #ffffff;
+  --line: #ecdfd0;
+  --primary: #d97a2f;
+  --primary-hover: #b8611f;
+  --primary-light: #fbe8d6;
+  --brown: #4a2f1f;
+  --brown-dark: #2e1f14;
+  --danger: #b3452f;
+  --danger-light: #fbe9e5;
+  --pending-bg: #f1e6d8;
+
+  /* Type */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Layout */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 1px 2px rgba(46, 31, 20, 0.08);
+  --shadow-md: 0 4px 16px rgba(46, 31, 20, 0.10);
+  --transition: 160ms ease;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--primary-hover);
+}
+
+/* ---------- Header / nav ---------- */
 
 header {
-  background: #1f2937;
+  background: var(--brown);
+  background-image: linear-gradient(135deg, var(--brown) 0%, var(--brown-dark) 100%);
   color: white;
-  padding: 1rem 2rem;
+  padding: 1.25rem 2rem;
+  box-shadow: var(--shadow-md);
 }
 
-main {
-  padding: 2rem;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-logo {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+header h1 {
+  color: white;
+  font-size: 1.5rem;
+  margin: 0;
 }
 
 nav {
   margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0;
 }
 
 nav a,
 nav span {
-  color: white;
+  color: rgba(255, 255, 255, 0.85);
   margin-right: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.3rem 0;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition), border-color var(--transition);
 }
+
+nav a:hover {
+  color: white;
+  border-color: var(--primary);
+}
+
+nav span {
+  color: white;
+  opacity: 0.65;
+}
+
+/* ---------- Main / layout ---------- */
+
+main {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---------- Forms ---------- */
 
 form {
   max-width: 420px;
@@ -31,108 +144,390 @@ form {
 
 label {
   display: block;
-  font-weight: bold;
-  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin-top: 1.1rem;
+  margin-bottom: 0.15rem;
 }
 
-input {
-  box-sizing: border-box;
-  display: block;
-  margin-top: 0.25rem;
-  padding: 0.5rem;
-  width: 100%;
-}
-
-button {
-  margin-top: 1rem;
-  padding: 0.6rem 1rem;
-}
-
-.flash {
-  background: #fff3cd;
-  border: 1px solid #ffe69c;
-  padding: 0.75rem;
-}
-
-.week-list {
-  display: grid;
-  gap: 1rem;
-  max-width: 800px;
-}
-
-.week-card {
-  background: white;
-  border: 1px solid #ddd;
-  padding: 1rem;
-}
-
-.week-card h3 {
-  margin-top: 0;
-}
-
+input,
 textarea {
   box-sizing: border-box;
   display: block;
   margin-top: 0.25rem;
-  padding: 0.5rem;
+  padding: 0.6rem 0.7rem;
   width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+input:hover,
+textarea:hover {
+  border-color: #d8c6ae;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+button {
+  margin-top: 1.25rem;
+  padding: 0.65rem 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+button:hover {
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* Secondary / destructive buttons, used inside admin actions */
+.admin-actions button {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  margin-top: 0;
+}
+
+.admin-actions button:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-hover);
+}
+
+/* ---------- Flash / feedback messages ---------- */
+
+.flash {
+  background: #fdf3e2;
+  border: 1px solid #f0d9a8;
+  border-left: 4px solid var(--primary);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  color: #6b4a17;
+  font-size: 0.92rem;
+}
+
+.feedback {
+  background: var(--primary-light);
+  border: 1px solid #f0d3ae;
+  border-left: 4px solid var(--primary);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  color: var(--brown);
+}
+
+/* ---------- Week list — the signature element ----------
+   Weeks are a real sequence, so we render them as a root
+   system: a vertical line connects numbered nodes down
+   the list, each node marking a week's growth. */
+
+.week-list {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 800px;
+  position: relative;
+  padding-left: 2.5rem;
+  counter-reset: week;
+}
+
+.week-list::before {
+  content: '';
+  position: absolute;
+  left: 0.95rem;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary), var(--line) 90%);
+}
+
+.week-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.4rem;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+
+.week-card::before {
+  counter-increment: week;
+  content: counter(week);
+  position: absolute;
+  left: -2.5rem;
+  top: 1.2rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  color: var(--brown);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.week-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #d8c6ae;
+  transform: translateX(2px);
+}
+
+.week-card h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: var(--primary-hover);
+}
+
+/* ---------- Tables ---------- */
 
 table {
   border-collapse: collapse;
-  background: white;
+  background: var(--surface);
   width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 th,
 td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
+  border: 1px solid var(--line);
+  padding: 0.75rem 0.9rem;
   text-align: left;
+  font-size: 0.92rem;
 }
 
 th {
-  background: #f0f0f0;
+  background: var(--brown);
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.feedback {
-  background: #e8f5e9;
-  border: 1px solid #a5d6a7;
-  margin-bottom: 1rem;
-  padding: 1rem;
+tbody tr:nth-child(even) {
+  background: #faf7f1;
 }
+
+tbody tr:hover {
+  background: var(--primary-light);
+}
+
+/* ---------- Progress ---------- */
 
 .progress-summary {
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   margin-top: 2rem;
   max-width: 420px;
-  padding: 1rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.progress-summary h3 {
+  margin-top: 0;
+  font-size: 1rem;
 }
 
 progress {
   width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: none;
+  background: var(--line);
 }
+
+progress::-webkit-progress-bar {
+  background: var(--line);
+  border-radius: 999px;
+}
+
+progress::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--primary), var(--brown));
+  border-radius: 999px;
+  transition: width 400ms ease;
+}
+
+progress::-moz-progress-bar {
+  background: linear-gradient(90deg, var(--primary), var(--brown));
+  border-radius: 999px;
+}
+
+/* ---------- Admin actions ---------- */
 
 .admin-actions {
   margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .admin-actions form {
   display: inline-block;
-  margin-right: 0.5rem;
+  margin-right: 0;
 }
 
 .status-label {
   display: inline-block;
   margin-left: 0.5rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--primary-light);
+  color: var(--primary-hover);
 }
+
+.status-label[data-status="pending"],
+.status-label.pending {
+  background: var(--pending-bg);
+  color: var(--brown);
+}
+
+.status-label[data-status="inactive"],
+.status-label.inactive,
+.status-label[data-status="rejected"] {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+/* ---------- Search ---------- */
 
 .search-form {
   margin-bottom: 1.5rem;
   max-width: 520px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.search-form input {
+  margin-top: 0;
 }
 
 .search-form button {
-  margin-right: 0.5rem;
+  margin-top: 0;
+}
+
+.search-form button:nth-of-type(2) {
+  background: var(--surface);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+
+.search-form button:nth-of-type(2):hover {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  header {
+    padding: 1rem 1.25rem;
+  }
+
+  main {
+    padding: 1.25rem;
+  }
+
+  nav a,
+  nav span {
+    margin-right: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .week-list {
+    padding-left: 2.1rem;
+  }
+
+  .week-card::before {
+    left: -2.1rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.7rem;
+  }
+
+  form,
+  .progress-summary {
+    max-width: 100%;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tbody tr {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.75rem;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    padding-left: 45%;
+  }
+
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.75rem;
+    width: 40%;
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+  }
 }
