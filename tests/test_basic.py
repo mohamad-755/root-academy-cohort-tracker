@@ -1,3 +1,102 @@
+def register_and_login_student(client):
+    client.post(
+        "/register",
+        data={
+            "name": "Test Student",
+            "email": "student@example.com",
+            "cohort_code": "ROOT2026",
+        },
+        follow_redirects=True,
+    )
+
+    client.post(
+        "/login",
+        data={
+            "email": "student@example.com",
+            "cohort_code": "ROOT2026",
+        },
+        follow_redirects=True,
+    )
+
+def login_admin(client):
+    client.post(
+        "/admin/login",
+        data={"admin_code": "test-admin-code"},
+        follow_redirects=True,
+    )
+
+def test_admin_can_review_submission(client):
+    register_and_login_student(client)
+
+    client.post(
+        "/submissions/week/1",
+        data={
+            "submission_url": "https://example.com/week-1",
+            "note": "My week 1 work",
+        },
+        follow_redirects=True,
+    )
+
+    client.get("/logout")
+    login_admin(client)
+
+    response = client.get("/admin/submissions/1/review")
+
+    assert response.status_code == 200
+    assert b"Review Week 1 Submission" in response.data
+    assert b"https://example.com/week-1" in response.data
+    assert b"My week 1 work" in response.data
+
+def test_admin_can_save_feedback_and_student_can_view_it(client):
+    register_and_login_student(client)
+
+    client.post(
+        "/submissions/week/1",
+        data={
+            "submission_url": "https://example.com/week-1",
+            "note": "My week 1 work",
+        },
+        follow_redirects=True,
+    )
+
+    client.get("/logout")
+    login_admin(client)
+
+    client.post(
+        "/admin/submissions/1/review",
+        data={"feedback": "Strong start. Add more explanation."},
+        follow_redirects=True,
+    )
+
+    client.get("/admin/logout")
+
+    client.post(
+        "/login",
+        data={
+            "email": "student@example.com",
+            "cohort_code": "ROOT2026",
+        },
+        follow_redirects=True,
+    )
+
+    response = client.get("/submissions/week/1")
+
+    assert response.status_code == 200
+    assert b"Strong start. Add more explanation." in response.data
+
+def test_admin_can_send_suppressed_reminders(client):
+    register_and_login_student(client)
+    client.get("/logout")
+    login_admin(client)
+
+    response = client.post(
+        "/admin/reminders/week/1",
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Sent 1 reminder email(s) for Week 1." in response.data
+
 def test_homepage_loads(client):
     response = client.get("/")
 
