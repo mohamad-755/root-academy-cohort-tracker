@@ -1,18 +1,16 @@
 # Root Academy Cohort Tracker
 
-A Flask web app for managing a 10-week Introduction to Data Science cohort at Root Academy.
+## Overview
 
-Students can view weekly curriculum, submit their work, track their progress, and read feedback. The admin can review submissions, leave feedback, track student progress, and send reminder emails to students with missing submissions.
+A Flask web app for managing a 10-week Introduction to Data Science cohort at Root Academy. Students can view weekly curriculum, submit their work, track their progress, and read feedback. The admin can review submissions, leave feedback, track student progress, and send reminder emails to students with missing submissions.
 
-## Live Demo
-
-Deployed app: https://root-academy-cohort-tracker.onrender.com
+Live demo: https://root-academy-cohort-tracker.onrender.com
 
 ## Why This Project Exists
 
 Root Academy is a student-centered Introduction to Data Science cohort launching in mid-July 2026. This tracker supports the real workflow of the cohort: students need one place to view weekly expectations and submit work, while the admin needs one dashboard to track progress and provide feedback.
 
-This project is also designed as a focused MLH Fellowship code sample. It uses Python, Flask, Jinja templates, SQLite, and session-based authentication to keep the app lightweight and readable.
+This project is also designed as a focused MLH Fellowship code sample. It uses Python, Flask, Jinja templates, SQLAlchemy, and session-based authentication to keep the app lightweight and readable.
 
 ## Features
 
@@ -23,6 +21,7 @@ This project is also designed as a focused MLH Fellowship code sample. It uses P
 - Admin dashboard
 - Submission review and feedback
 - Admin-triggered email reminders
+- CSRF-protected forms
 - Core pytest test coverage
 - GitHub Actions test workflow
 
@@ -31,10 +30,17 @@ This project is also designed as a focused MLH Fellowship code sample. It uses P
 - Python
 - Flask
 - Jinja2
-- SQLite
+- SQLAlchemy
+- Flask-Migrate
+- Flask-WTF (CSRF protection)
 - Flask-Mail
+- SQLite (local development) / PostgreSQL (production)
 - pytest
 - GitHub Actions
+
+## Architecture
+
+The app uses Flask blueprints to separate public routes, authentication, curriculum, submissions, and admin workflows. SQLAlchemy models define students and submissions, while Flask-Migrate manages database schema changes.
 
 ## Local Setup
 
@@ -63,12 +69,6 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Initialize the database:
-
-```bash
-flask init-db
-```
-
 Run the app:
 
 ```bash
@@ -81,7 +81,7 @@ Open:
 http://127.0.0.1:5000
 ```
 
-## Configuration
+## Environment Variables
 
 The app reads configuration from environment variables.
 
@@ -89,6 +89,7 @@ The app reads configuration from environment variables.
 | --- | --- | --- |
 | `SECRET_KEY` | Flask session signing key | `dev-secret-key` |
 | `ADMIN_CODE` | Code used for admin login | `dev-admin-code` |
+| `DATABASE_URL` | Database connection string | local SQLite file |
 | `MAIL_SERVER` | SMTP server | `localhost` |
 | `MAIL_PORT` | SMTP port | `25` |
 | `MAIL_USE_TLS` | Enable TLS for SMTP | `false` |
@@ -97,7 +98,19 @@ The app reads configuration from environment variables.
 | `MAIL_DEFAULT_SENDER` | Sender email address | `noreply@rootacademy.local` |
 | `MAIL_SUPPRESS_SEND` | Suppress real email sending | `true` |
 
-For local development, `MAIL_SUPPRESS_SEND` defaults to `true` so reminder emails are not actually sent.
+For local development, `MAIL_SUPPRESS_SEND` defaults to `true` so reminder emails are not actually sent. If `DATABASE_URL` is unset, the app falls back to a local SQLite database.
+
+## Database Setup
+
+This project uses Flask-Migrate (Alembic) to manage schema changes.
+
+Apply migrations to set up or update your database:
+
+```bash
+flask db upgrade
+```
+
+Run this after cloning the repo, after pulling changes that include new migrations, and again during deployment setup.
 
 ## Running Tests
 
@@ -105,24 +118,9 @@ For local development, `MAIL_SUPPRESS_SEND` defaults to `true` so reminder email
 pytest
 ```
 
-The test suite uses a temporary SQLite database, so it does not affect the local development database.
+The test suite uses a temporary SQLite database, so it does not affect the local development database. CSRF protection is disabled in the test configuration so the test client can submit forms without a live token.
 
-## Admin Access In Development
-
-The default development admin code is:
-
-```text
-dev-admin-code
-```
-
-In production, set a real `ADMIN_CODE` environment variable.
-
-## Demo Notes
-
-Student accounts can be created from the registration page using any test email and cohort code.
-Admin access requires the configured ADMIN_CODE, which is stored as a Render environment variable and is not committed to the repository.
-
-## Deployment Notes
+## Deployment
 
 This app can be deployed on Render.
 
@@ -132,42 +130,53 @@ Deployed app:
 https://root-academy-cohort-tracker.onrender.com
 ```
 
-Render demo start command:
+Render production start command:
 
 ```bash
-flask init-db && gunicorn run:app
+flask db upgrade && gunicorn run:app
 ```
 
-The schema uses CREATE TABLE IF NOT EXISTS, so this ensures missing SQLite tables exist without dropping existing data.
+`flask db upgrade` applies any pending migrations without dropping existing data, so it's safe to run on every deploy.
+
 Local development still uses:
 
 ```bash
 python run.py
 ```
 
+On Windows, use `python run.py` for local development. Gunicorn is intended for Linux-based deployment environments such as Render or Railway.
+
 Recommended production settings:
 
 - Set a secure `SECRET_KEY`
 - Set a secure `ADMIN_CODE`
+- Set `DATABASE_URL` to your production PostgreSQL connection string
 - Configure SMTP variables if real reminder emails should be sent
 - Set `MAIL_SUPPRESS_SEND=false` only after SMTP credentials are configured
-- Run `flask init-db` during setup or before first use
-
-
-On Windows, use `python run.py` for local development. Gunicorn is intended for Linux-based deployment environments such as Render or Railway.## Deployment Notes
+- Run `flask db upgrade` during setup and on every deploy
 
 ## Screenshots
 
-Screenshots will be added after deployment.
+Screenshots are stored in `docs/screenshots/`:
 
-Suggested screenshots:
-
-- Student homepage with progress
-- Curriculum overview
-- Weekly submission form
-- Admin dashboard
-- Feedback review page
+- `homepage.png` — Student homepage with progress
+- `curriculum.png` — Curriculum overview
+- `my-submissions.png` — Student progress tracking
+- `submit-work.png` — Weekly submission form
+- `admin-dashboard.png` — Admin dashboard
+- `review-feedback.png` — Feedback review page
 
 ## Project Scope
 
-This project intentionally uses a lightweight Flask + SQLite architecture. The goal is to keep the app understandable, useful, and appropriate for a small cohort workflow rather than turning it into a large platform.
+This project intentionally uses a lightweight Flask + SQLAlchemy architecture. The goal is to keep the app understandable, useful, and appropriate for a small cohort workflow rather than turning it into a large platform.
+
+## MLH Code Sample Notes
+
+This repository is maintained as a focused code sample for the MLH Fellowship application. It is intended to demonstrate:
+
+- A complete, working Flask application built from scratch, not a tutorial clone
+- Clean separation of concerns via blueprints and SQLAlchemy models
+- Real schema management with Flask-Migrate rather than ad hoc SQL
+- Working test coverage and a CI workflow via GitHub Actions
+- Security fundamentals, including CSRF protection on all form submissions
+- A genuine use case: this is the actual tracker running Root Academy's live cohort, not a demo-only project
