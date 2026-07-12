@@ -8,28 +8,39 @@
 </head>
 <body>
   <header>
-    <h1>Root Academy Cohort Tracker</h1>
-      <nav>
-        <a href="{{ url_for('main.index') }}">Home</a>
-        <a href="{{ url_for('admin.dashboard') }}">Admin</a>
-        {% if session.get("is_admin") %}
-          <span>Admin</span>
-          <a href="{{ url_for('admin.logout') }}">Admin log out</a>
-        {% elif g.student %}
-          <a href="{{ url_for('curriculum.index') }}">Curriculum</a>
-          <span>{{ g.student.name }}</span>
-          <a href="{{ url_for('auth.logout') }}">Log out</a>
-        {% else %}
-          <a href="{{ url_for('auth.register') }}">Register</a>
-          <a href="{{ url_for('auth.login') }}">Log in</a>
-        {% endif %}
-      </nav>
+    <div class="brand">
+      <img
+        class="brand-logo"
+        src="{{ url_for('static', filename='img/logo.png') }}"
+        alt="Root Academy logo"
+      >
+      <h1>Root Academy Cohort Tracker</h1>
+    </div>
+
+    <nav>
+      <a href="{{ url_for('main.index') }}">Home</a>
+
+      {% if session.get("is_admin") %}
+        <a href="{{ url_for('admin.dashboard') }}">Admin dashboard</a>
+        <span>Admin</span>
+        <a href="{{ url_for('admin.logout') }}">Log out</a>
+      {% elif g.student %}
+        <a href="{{ url_for('curriculum.index') }}">Curriculum</a>
+        <span>{{ g.student.name }}</span>
+        <a href="{{ url_for('auth.logout') }}">Log out</a>
+      {% else %}
+        <a href="{{ url_for('admin.login') }}">Admin</a>
+        <a href="{{ url_for('auth.register') }}">Register</a>
+        <a href="{{ url_for('auth.login') }}">Log in</a>
+      {% endif %}
+    </nav>
   </header>
 
   <main>
     {% for message in get_flashed_messages() %}
       <p class="flash">{{ message }}</p>
     {% endfor %}
+
     {% block content %}{% endblock %}
   </main>
 </body>

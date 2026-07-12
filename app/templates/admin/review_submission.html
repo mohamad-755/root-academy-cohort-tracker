@@ -5,23 +5,25 @@
 {% block content %}
   <p><a href="{{ url_for('admin.dashboard') }}">Back to dashboard</a></p>
 
-  <h2>Review Week {{ submission.week_number }} Submission</h2>
+  <div class="progress-summary" style="max-width: 640px;">
+    <h3>Review Week {{ submission.week_number }} Submission</h3>
 
-  <p>
-    <strong>Student:</strong>
-    {{ submission.student.name }} ({{ submission.student.email }})
-  </p>
+    <p>
+      <strong>Student:</strong>
+      {{ submission.student.name }} ({{ submission.student.email }})
+    </p>
 
-  <p>
-    <strong>Submitted link:</strong>
-    <a href="{{ submission.submission_url }}" target="_blank">
-      {{ submission.submission_url }}
-    </a>
-  </p>
+    <p>
+      <strong>Submitted link:</strong>
+      <a href="{{ submission.submission_url }}" target="_blank" rel="noopener">
+        {{ submission.submission_url }}
+      </a>
+    </p>
 
-  {% if submission.note %}
-    <p><strong>Student note:</strong> {{ submission.note }}</p>
-  {% endif %}
+    {% if submission.note %}
+      <p><strong>Student note:</strong> {{ submission.note }}</p>
+    {% endif %}
+  </div>
 
   <form method="post">
     <label for="feedback">Feedback</label>
