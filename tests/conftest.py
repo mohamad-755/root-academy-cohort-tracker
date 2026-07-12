@@ -15,6 +15,7 @@ def app(tmp_path):
             "SQLALCHEMY_DATABASE_URI": "sqlite:///" + str(test_db).replace("\\", "/"),
             "MAIL_SUPPRESS_SEND": True,
             "ADMIN_CODE": "test-admin-code",
+            "WTF_CSRF_ENABLED": False,
         }
     )
 

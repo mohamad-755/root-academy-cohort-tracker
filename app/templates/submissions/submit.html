@@ -32,5 +32,6 @@
     <textarea id="note" name="note" rows="5">{{ submission.note if submission else "" }}</textarea>
 
     <button type="submit">{{ "Update submission" if submission else "Submit work" }}</button>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   </form>
 {% endblock %}

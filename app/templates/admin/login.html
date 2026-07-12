@@ -11,6 +11,7 @@
       <input id="admin_code" name="admin_code" type="password" required autofocus>
 
       <button type="submit">Log in as admin</button>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </form>
   </div>
 {% endblock %}
