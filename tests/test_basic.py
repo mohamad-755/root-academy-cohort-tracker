@@ -76,3 +76,43 @@ def test_logged_in_student_can_view_submissions_dashboard(client, app):
     assert b"My submissions" in response.data
     assert b"Week 1" in response.data
     assert b"Missing" in response.data
+
+def test_admin_dashboard_requires_admin_login(client):
+    response = client.get("/admin/")
+
+    assert response.status_code == 302
+    assert "/admin/login" in response.headers["Location"]
+
+def test_admin_can_log_in(client):
+    response = client.post(
+        "/admin/login",
+        data={"admin_code": "test-admin-code"},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Admin dashboard" in response.data
+
+def test_admin_dashboard_shows_registered_students(client):
+    client.post(
+        "/register",
+        data={
+            "name": "Test Student",
+            "email": "student@example.com",
+            "cohort_code": "ROOT2026",
+        },
+        follow_redirects=True,
+    )
+
+    client.post(
+        "/admin/login",
+        data={"admin_code": "test-admin-code"},
+        follow_redirects=True,
+    )
+
+    response = client.get("/admin/")
+
+    assert response.status_code == 200
+    assert b"Test Student" in response.data
+    assert b"student@example.com" in response.data
+    
