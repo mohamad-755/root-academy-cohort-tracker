@@ -26,6 +26,7 @@
       {% for week in weeks %}
         <form method="post" action="{{ url_for('admin.send_reminders', week_number=week['number']) }}">
           <button type="submit">Send Week {{ week["number"] }} reminders</button>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         </form>
       {% endfor %}
     </section>

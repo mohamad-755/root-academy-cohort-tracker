@@ -30,5 +30,6 @@
     <textarea id="feedback" name="feedback" rows="6">{{ submission.feedback or "" }}</textarea>
 
     <button type="submit">Save feedback</button>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   </form>
 {% endblock %}
