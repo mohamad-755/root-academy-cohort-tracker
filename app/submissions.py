@@ -60,3 +60,21 @@ def submit(week_number):
         week=week,
         submission=existing_submission,
     )
+
+@submissions.route("/")
+@login_required
+def index():
+    student_submissions = Submission.query.filter_by(
+        student_id=g.student.id
+    ).all()
+
+    submissions_by_week = {
+        submission.week_number: submission
+        for submission in student_submissions
+    }
+
+    return render_template(
+        "submissions/index.html",
+        weeks=WEEKS,
+        submissions_by_week=submissions_by_week,
+    )
