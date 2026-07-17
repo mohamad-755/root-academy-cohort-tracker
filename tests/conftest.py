@@ -1,7 +1,7 @@
 import pytest
 
 from app import create_app
-from app.db import init_db
+from app.extensions import db as sqlalchemy_db
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def app(tmp_path):
     )
 
     with app.app_context():
-        init_db()
+        sqlalchemy_db.create_all()
 
     yield app
 
