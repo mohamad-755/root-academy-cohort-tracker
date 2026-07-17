@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Flask web app for managing a 10-week Introduction to Data Science cohort at Root Academy. Students can view weekly curriculum, submit their work, track their progress, and read feedback. The admin can review submissions, leave feedback, track student progress, and send reminder emails to students with missing submissions.
+A Flask web app for managing an Introduction to Data Science cohort at Root Academy. Students can view weekly curriculum, submit their work, track their progress, and read feedback. The admin can review submissions, leave feedback, track student progress, and send reminder emails to students with missing submissions.
 
 Live demo: https://root-academy-cohort-tracker.onrender.com
 
@@ -40,7 +40,12 @@ This project is also designed as a focused MLH Fellowship code sample. It uses P
 
 ## Architecture
 
-The app uses Flask blueprints to separate public routes, authentication, curriculum, submissions, and admin workflows. SQLAlchemy models define students and submissions, while Flask-Migrate manages database schema changes.
+The app uses Flask blueprints to separate public routes, authentication, curriculum, submissions, and admin workflows. SQLAlchemy models define students and submissions, and Flask-Migrate (Alembic) manages all database schema changes.
+
+## Known Trade-offs
+
+- **Cohort-code authentication.** Students log in with their email plus a shared cohort code rather than an individual password. This keeps onboarding friction-free for a small, trusted cohort, but it means anyone who knows a student's email and the cohort code could sign in as them. This is an acceptable trade-off for a low-stakes internal tracker used by a known group of students, not a general-purpose auth system.
+- **Curriculum is defined in code.** Weekly content lives in `app/curriculum.py` as a Python list rather than in the database or a CMS. This keeps the data model focused on students and submissions, and new weeks are added by extending that list as the cohort progresses.
 
 ## Local Setup
 
@@ -154,17 +159,6 @@ Recommended production settings:
 - Configure SMTP variables if real reminder emails should be sent
 - Set `MAIL_SUPPRESS_SEND=false` only after SMTP credentials are configured
 - Run `flask db upgrade` during setup and on every deploy
-
-## Screenshots
-
-Screenshots are stored in `docs/screenshots/`:
-
-- `homepage.png` — Student homepage with progress
-- `curriculum.png` — Curriculum overview
-- `my-submissions.png` — Student progress tracking
-- `submit-work.png` — Weekly submission form
-- `admin-dashboard.png` — Admin dashboard
-- `review-feedback.png` — Feedback review page
 
 ## Project Scope
 
