@@ -22,9 +22,6 @@ def create_app(test_config=None):
     from app.mail import mail
     mail.init_app(app)
 
-    from app import db
-    db.init_app(app)
-
     from app.routes import main
     app.register_blueprint(main)
 
