@@ -1,19 +1,27 @@
 def register_and_login_student(client):
     client.post(
-        "/register",
+        "/admin/login",
+        data={"admin_code": "test-admin-code"},
+        follow_redirects=True,
+    )
+
+    client.post(
+        "/admin/students/new",
         data={
             "name": "Test Student",
             "email": "student@example.com",
-            "cohort_code": "ROOT2026",
+            "access_code": "ROOT2026",
         },
         follow_redirects=True,
     )
+
+    client.get("/admin/logout")
 
     client.post(
         "/login",
         data={
             "email": "student@example.com",
-            "cohort_code": "ROOT2026",
+            "access_code": "ROOT2026",
         },
         follow_redirects=True,
     )
@@ -74,7 +82,7 @@ def test_admin_can_save_feedback_and_student_can_view_it(client):
         "/login",
         data={
             "email": "student@example.com",
-            "cohort_code": "ROOT2026",
+            "access_code": "ROOT2026",
         },
         follow_redirects=True,
     )
@@ -105,10 +113,11 @@ def test_homepage_loads(client):
 
 
 def test_student_can_register_and_login(client, auth):
-    register_response = auth.register()
+    register_response = client.get("/register")
 
-    assert b"Registration successful" in register_response.data
+    assert b"Student accounts are created" in register_response.data
 
+    auth.create_student()
     login_response = auth.login()
 
     assert b"Test Student" in login_response.data
@@ -123,7 +132,7 @@ def test_curriculum_requires_login(client):
 
 
 def test_logged_in_student_can_view_curriculum(client, auth):
-    auth.register()
+    auth.create_student()
     auth.login()
 
     response = client.get("/curriculum/")
@@ -134,7 +143,7 @@ def test_logged_in_student_can_view_curriculum(client, auth):
 
 
 def test_student_can_submit_weekly_work(client, auth):
-    auth.register()
+    auth.create_student()
     auth.login()
 
     response = client.post(
@@ -151,20 +160,28 @@ def test_student_can_submit_weekly_work(client, auth):
 
 def test_logged_in_student_can_view_submissions_dashboard(client, app):
     client.post(
-        "/register",
+        "/admin/login",
+        data={"admin_code": "test-admin-code"},
+        follow_redirects=True,
+    )
+
+    client.post(
+        "/admin/students/new",
         data={
             "name": "Test Student",
             "email": "student@example.com",
-            "cohort_code": "ROOT2026",
+            "access_code": "ROOT2026",
         },
         follow_redirects=True,
     )
+
+    client.get("/admin/logout")
 
     client.post(
         "/login",
         data={
             "email": "student@example.com",
-            "cohort_code": "ROOT2026",
+            "access_code": "ROOT2026",
         },
         follow_redirects=True,
     )
@@ -194,18 +211,18 @@ def test_admin_can_log_in(client):
 
 def test_admin_dashboard_shows_registered_students(client):
     client.post(
-        "/register",
-        data={
-            "name": "Test Student",
-            "email": "student@example.com",
-            "cohort_code": "ROOT2026",
-        },
+        "/admin/login",
+        data={"admin_code": "test-admin-code"},
         follow_redirects=True,
     )
 
     client.post(
-        "/admin/login",
-        data={"admin_code": "test-admin-code"},
+        "/admin/students/new",
+        data={
+            "name": "Test Student",
+            "email": "student@example.com",
+            "access_code": "ROOT2026",
+        },
         follow_redirects=True,
     )
 

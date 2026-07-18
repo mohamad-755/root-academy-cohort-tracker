@@ -24,11 +24,11 @@ class Student(db.Model):
         cascade="all, delete-orphan",
     )
 
-    def set_cohort_code(self, cohort_code):
-        self.cohort_code_hash = generate_password_hash(cohort_code)
+    def set_access_code(self, access_code):
+        self.cohort_code_hash = generate_password_hash(access_code)
 
-    def check_cohort_code(self, cohort_code):
-        return check_password_hash(self.cohort_code_hash, cohort_code)
+    def check_access_code(self, access_code):
+        return check_password_hash(self.cohort_code_hash, access_code)
 
 
 class Submission(db.Model):

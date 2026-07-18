@@ -33,23 +33,32 @@ def client(app):
 @pytest.fixture
 def auth(client):
     class AuthActions:
-        def register(self, name="Test Student", email="student@example.com", cohort_code="ROOT2026"):
-            return client.post(
-                "/register",
+        def create_student(self, name="Test Student", email="student@example.com", access_code="ROOT2026"):
+            client.post(
+                "/admin/login",
+                data={"admin_code": "test-admin-code"},
+                follow_redirects=True,
+            )
+
+            response = client.post(
+                "/admin/students/new",
                 data={
                     "name": name,
                     "email": email,
-                    "cohort_code": cohort_code,
+                    "access_code": access_code,
                 },
                 follow_redirects=True,
             )
 
-        def login(self, email="student@example.com", cohort_code="ROOT2026"):
+            client.get("/admin/logout", follow_redirects=True)
+            return response
+
+        def login(self, email="student@example.com", access_code="ROOT2026"):
             return client.post(
                 "/login",
                 data={
                     "email": email,
-                    "cohort_code": cohort_code,
+                    "access_code": access_code,
                 },
                 follow_redirects=True,
             )
