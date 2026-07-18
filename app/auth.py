@@ -38,7 +38,8 @@ def register():
 
         if error is None:
             try:
-                student = Student(name=name, email=email, cohort_code=cohort_code)
+                student = Student(name=name, email=email)
+                student.set_cohort_code(cohort_code)
                 db.session.add(student)
                 db.session.commit()
             except IntegrityError:
@@ -61,12 +62,9 @@ def login():
 
         error = None
 
-        student = Student.query.filter_by(
-            email=email,
-            cohort_code=cohort_code,
-        ).first()
+        student = Student.query.filter_by(email=email).first()
 
-        if student is None:
+        if student is None or not student.check_cohort_code(cohort_code):
             error = "Incorrect email or cohort code."
 
         if error is None:
