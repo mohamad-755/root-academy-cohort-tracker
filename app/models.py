@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from app.extensions import db
 
 
@@ -13,7 +15,7 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
-    cohort_code = db.Column(db.String(80), nullable=False)
+    cohort_code_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     submissions = db.relationship(
@@ -21,6 +23,12 @@ class Student(db.Model):
         back_populates="student",
         cascade="all, delete-orphan",
     )
+
+    def set_cohort_code(self, cohort_code):
+        self.cohort_code_hash = generate_password_hash(cohort_code)
+
+    def check_cohort_code(self, cohort_code):
+        return check_password_hash(self.cohort_code_hash, cohort_code)
 
 
 class Submission(db.Model):

@@ -15,8 +15,7 @@
       <input id="email" name="email" type="email" autocomplete="email" required>
 
       <label for="cohort_code">Cohort code</label>
-      <input id="cohort_code" name="cohort_code" type="text" autocomplete="off" required>
-
+      <input id="cohort_code" name="cohort_code" type="password" autocomplete="new-password" required>
       <button type="submit">Create account</button>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </form>
