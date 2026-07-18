@@ -1,9 +1,11 @@
 from functools import wraps
 from datetime import datetime, timezone
+import secrets
 
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, session, url_for
 from flask_mail import Message
 from sqlalchemy import and_, or_
+from sqlalchemy.exc import IntegrityError
 
 from app.curriculum import WEEKS
 from app.extensions import db
@@ -94,6 +96,46 @@ def dashboard():
         progress_by_student=progress_by_student,
         search=search,
     )
+
+
+@admin.route("/students/new", methods=("GET", "POST"))
+@admin_required
+def create_student():
+    generated_access_code = None
+
+    if request.method == "POST":
+        name = request.form["name"].strip()
+        email = request.form["email"].strip().lower()
+        access_code = request.form.get("access_code", "").strip()
+
+        error = None
+
+        if not name:
+            error = "Name is required."
+        elif not email:
+            error = "Email is required."
+
+        if error is None:
+            generated_access_code = access_code or secrets.token_urlsafe(9)
+            student = Student(name=name, email=email)
+            student.set_access_code(generated_access_code)
+
+            try:
+                db.session.add(student)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                error = "A student with that email already exists."
+            else:
+                flash(
+                    "Student created. Share this personal access code once: "
+                    f"{generated_access_code}"
+                )
+                return redirect(url_for("admin.dashboard"))
+
+        flash(error)
+
+    return render_template("admin/create_student.html")
 
 
 @admin.route("/submissions/<int:submission_id>/review", methods=("GET", "POST"))

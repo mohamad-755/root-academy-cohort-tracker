@@ -1,7 +1,6 @@
 from functools import wraps
 
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
-from sqlalchemy.exc import IntegrityError
 
 from app.extensions import db
 from app.models import Student
@@ -22,35 +21,7 @@ def load_logged_in_student():
 
 @auth.route("/register", methods=("GET", "POST"))
 def register():
-    if request.method == "POST":
-        name = request.form["name"].strip()
-        email = request.form["email"].strip().lower()
-        cohort_code = request.form["cohort_code"].strip()
-
-        error = None
-
-        if not name:
-            error = "Name is required."
-        elif not email:
-            error = "Email is required."
-        elif not cohort_code:
-            error = "Cohort code is required."
-
-        if error is None:
-            try:
-                student = Student(name=name, email=email)
-                student.set_cohort_code(cohort_code)
-                db.session.add(student)
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                error = "A student with that email already exists."
-            else:
-                flash("Registration successful. Please log in.")
-                return redirect(url_for("auth.login"))
-
-        flash(error)
-
+    flash("Student accounts are created by the cohort admin. Please log in with your assigned access code.")
     return render_template("auth/register.html")
 
 
@@ -58,14 +29,14 @@ def register():
 def login():
     if request.method == "POST":
         email = request.form["email"].strip().lower()
-        cohort_code = request.form["cohort_code"].strip()
+        access_code = request.form["access_code"].strip()
 
         error = None
 
         student = Student.query.filter_by(email=email).first()
 
-        if student is None or not student.check_cohort_code(cohort_code):
-            error = "Incorrect email or cohort code."
+        if student is None or not student.check_access_code(access_code):
+            error = "Incorrect email or access code."
 
         if error is None:
             session.clear()

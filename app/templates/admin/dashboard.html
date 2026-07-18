@@ -4,6 +4,11 @@
 
 {% block content %}
   <h2>Admin dashboard</h2>
+
+  <section class="admin-actions">
+    <a href="{{ url_for('admin.create_student') }}">Add student</a>
+  </section>
+
   <form class="search-form" method="get" action="{{ url_for('admin.dashboard') }}">
     <label for="search">Search students</label>
     <input

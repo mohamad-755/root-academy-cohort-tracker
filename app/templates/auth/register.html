@@ -6,18 +6,8 @@
   <h2>Register</h2>
 
   <div class="progress-summary" style="margin-top: 1rem;">
-    <form method="post">
-      
-      <label for="name">Name</label>
-      <input id="name" name="name" type="text" autocomplete="name" autofocus required>
-
-      <label for="email">Email</label>
-      <input id="email" name="email" type="email" autocomplete="email" required>
-
-      <label for="cohort_code">Cohort code</label>
-      <input id="cohort_code" name="cohort_code" type="password" autocomplete="new-password" required>
-      <button type="submit">Create account</button>
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    </form>
+    <p>Student accounts are created by the Root Academy admin.</p>
+    <p>If you are enrolled, use the email and personal access code you received to log in.</p>
+    <p><a href="{{ url_for('auth.login') }}">Go to login</a></p>
   </div>
 {% endblock %}
